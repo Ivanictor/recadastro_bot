@@ -1,7 +1,10 @@
 from fastapi import APIRouter
-from models.webhook import Webhook
-from utils.cpf import format_cpf, validate_cpf, query_banco, validate_photo
 import time
+from models.webhook import Webhook
+from utils.validate_data import format_cpf, validate_cpf, validate_photo
+from services.data_loader import query_banco
+from services.request_whatsapp import enviar_whatsapp
+from services.email_service import send_email_to_manager
 
 router = APIRouter()
 
@@ -53,12 +56,15 @@ def webhook(dados: Webhook):
 
     sessao = sessoes.get(session)
 
-    if time.monotonic() > sessao["expira_em"]:
-        del sessoes[session]
-
     if sessao is None:
         return {
                 "fulfillmentText": "Não encontramos os dados da sessão. Digite 13 (Recadastramento normal) ou 16 (Recadastramento fora do aniversário) para iniciar novamente"
+            }
+
+    if time.monotonic() > sessao["expira_em"]:
+        del sessoes[session]
+        return {
+                "fulfillmentText": "Sua sessão expirou. Digite 13 (Recadastramento normal) ou 16 (Recadastramento fora do aniversário) para iniciar novamente"
             }
 
     if sim == '' and validate_photo(
@@ -71,8 +77,28 @@ def webhook(dados: Webhook):
         nome_query = sessao.get("nome")
         cpf_query = sessao.get("cpf")
 
-        query_banco(nome_query, cpf_query)
-        print(f"\nSucesso! Query: {nome_query}, {cpf_query}")
-        return {
-            "fulfillmentText": "Dados enviados ao gerente responsável"
-        }
+        print(f"\nQuery: {nome_query}, {cpf_query}")
+
+        gerente_nome, gerente_numero, gerente_email = query_banco(nome_query, cpf_query)
+
+        mensagem = (
+            f"""
+            Prezado {gerente_nome}, venho alertá-lo de que o servidor {nome_query}, integrante da sua gerência,
+            solicitou o recadastramento. Conforme os novos procedimentos adotados pela GGDP, é necessário que o 
+            gerente da área assine o processo de recadastramento dos seus funcionários, razão pela qual solicitamos
+            a sua assinatura no processo em anexo. """
+        )
+        sucesso = enviar_whatsapp(gerente_numero, mensagem)
+        sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
+
+        if sucesso or sucesso_email:
+            return {
+                "fulfillmentText": "Dados enviados ao gerente responsável"
+            }
+        else:
+            print("Falha ao enviar ao gerente")
+            return {
+                "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para aprovação"
+            }
+
+        

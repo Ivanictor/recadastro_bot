@@ -43,5 +43,4 @@ def validate_photo(foto13, fotorosto13, fotodoc16, fotorosto16):
     return False
 
 
-def query_banco(nome_query, cpf_query):
-    return True
+
