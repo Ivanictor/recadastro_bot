@@ -2,7 +2,7 @@
 
 O projeto foi criado para estabelecer conexão com um bot da SEAD que é utilizado, entre outras funções, para o recadastro dos usuários do órgão. Com a conexão, o programa coleta as informações dos usuários que procedem com o recadastro e as utiliza para localizar o gerente da área e notificá-lo sobre o processo para que o assine.
 
-# Estrutura
+## Estrutura
 
 O projeto foi construído com a utilização das seguintes tecnologias:
 
@@ -11,7 +11,7 @@ O projeto foi construído com a utilização das seguintes tecnologias:
 `Webhook`: Utilizado para o envio das requisições HTTP à API <br>
 `Uvicorn`: Execução da aplicação web em desenvolvimento 
 
-# Funcionamento
+## Funcionamento
 
 O Dialogflow divide as seções internas do bot em "Intents". Se a mensagem de entrada do usuário se enquadrar na lista de frases de treinamento, elas são iniciadas e executam as ações programadas em sua lista de ações, salvando as respostas em variáveis. A conexão desse sistema com o fluxo de conversas gerenciado pelo Dialogflow utiliza o "fulfillment", com a ativação de uma webhook em todas as intents que entregam as informações a serem utilizadas. Após a conclusão de uma intent (o usuário preencheu os dados que ela solicitava), todos os dados da intent são enviados como um JSON via webhook. 
 
