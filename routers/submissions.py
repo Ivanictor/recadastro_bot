@@ -34,8 +34,14 @@ def webhook(dados: Webhook):
     fotorosto16 = dados.queryResult.parameters.fotorosto7
     
     session = dados.session
-    sim = (dados.queryResult.parameters.Sim 
-           or dados.queryResult.parameters.sim)
+
+    sim_maiusculo = dados.queryResult.parameters.Sim
+    sim_minusculo = dados.queryResult.parameters.sim
+
+    if sim_maiusculo is not None:
+        sim = sim_maiusculo
+    else:
+        sim = sim_minusculo
 
     if cpf is not None:
         cpf = formatar_cpf(cpf)
@@ -98,11 +104,12 @@ def webhook(dados: Webhook):
             sucesso = enviar_whatsapp(gerente_numero, mensagem)
 
         sucesso_email = False
-        
+
         if gerente_email:
             sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         if sucesso or sucesso_email:
+            print("\nSucesso! Dados enviados ao gerente responsável\n")
             return {
                 "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}"
             }
@@ -112,4 +119,19 @@ def webhook(dados: Webhook):
                 "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação"
             }
 
-        
+    else:
+        print("\nNão enviou:\n")
+
+        if sim != '' and not nome:
+            print("Sim não enviado\n")
+            print(sim)
+
+        if not validar_foto(
+        sessao.get("foto13"), 
+        sessao.get("fotorosto13"), 
+        sessao.get("fotodoc16"), 
+        sessao.get("fotorosto16")
+        ) and not nome:
+            print("Fotos não validadas\n")
+        else:
+            print("Ainda não chegou na última intent")

@@ -66,4 +66,6 @@ def query_banco(unidade_query, nome_query):
                 gerente da área assine o processo de recadastramento dos seus funcionários, razão pela qual solicitamos
                 a sua assinatura no processo em anexo. """
             )
+    print(f"\nNome do gerente responsável: {gerente_nome}\n")
+    
     return gerente_nome, gerente_numero, gerente_email, mensagem

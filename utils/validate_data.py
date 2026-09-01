@@ -41,8 +41,11 @@ def validar_cpf(cpf: str) -> bool:
 def validar_foto(foto13, fotorosto13, fotodoc16, fotorosto16):
     if foto13 and fotorosto13:
         return True
+    
     if fotodoc16 and fotorosto16:
         return True
+    
+    print("Fotos não validadas")
     return False
 
 def normalizar(texto):

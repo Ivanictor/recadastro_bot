@@ -24,12 +24,12 @@ def send_email_to_manager(nome_funcionario, destiny_email, mensagem):
             server.ehlo()
             server.login(email_remetente, senha)
             server.sendmail(email_remetente, destiny_email, msg.as_string())
-        print("Email enviado")
+        print("\nEmail enviado\n")
 
         return True
 
     except Exception as e:
-        print(f"Erro ao enviar email: {e}")
+        print(f"\nErro ao enviar email: {e}\n")
         return False
 
 
