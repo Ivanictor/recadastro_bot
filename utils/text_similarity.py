@@ -10,8 +10,4 @@ def compare_names(name1, name2):
     # Média ponderada das similaridades
     final_score = (levenshtein_score * 0.5) + (jaro_winkler_score * 0.5)
     
-    return {"similarity": final_score / 100,
-            "levenshtein_score": levenshtein_score/100,
-            "jaro_winkler_score": jaro_winkler_score/100}
-
-
+    return final_score/100
