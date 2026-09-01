@@ -92,10 +92,15 @@ def webhook(dados: Webhook):
 
         gerente_nome, gerente_numero, gerente_email, mensagem = query_banco(unidade_query, nome_query)
 
+        sucesso = False
+
         if gerente_numero:
             sucesso = enviar_whatsapp(gerente_numero, mensagem)
-            
-        sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
+
+        sucesso_email = False
+        
+        if gerente_email:
+            sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         if sucesso or sucesso_email:
             return {

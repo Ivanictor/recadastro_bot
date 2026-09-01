@@ -3,6 +3,9 @@ import unicodedata
 
 
 def normalizar(texto):
+    if texto is None:
+        return ""
+    
     texto = texto.strip().lower()
 
     texto = unicodedata.normalize("NFD", texto)
@@ -15,7 +18,7 @@ def normalizar(texto):
     return texto
 
 def query_banco(unidade_query, nome_query):
-    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xslx", skiprows=3, header=0)
+    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xlsx", skiprows=3, header=0)
 
     df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
@@ -44,7 +47,7 @@ def query_banco(unidade_query, nome_query):
     gerente_numero = resultado.iloc[0]["CELULAR"]
     gerente_email = resultado.iloc[0]["EMAIL"]
 
-    if not gerente_email:
+    if pd.isna(gerente_email) or not str(gerente_email).strip():
         print("Unidade sem gerente")
 
         mensagem = (
