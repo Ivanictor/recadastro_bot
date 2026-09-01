@@ -58,7 +58,7 @@ def normalizar(texto):
     return texto
 
 def validar_unidade(unidade):
-    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xslx", skiprows=3, header=0)
+    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xlsx", skiprows=3, header=0)
 
     df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
