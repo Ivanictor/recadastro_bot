@@ -32,13 +32,13 @@ def query_banco(unidade_query, nome_query):
 
         mensagem = (
                     f"""
-                    Alerta à GGDP: o servidor {nome_query} informou ser integrante da gerência {unidade_query},
+                    Alerta Recadastro: o servidor {nome_query} informou ser integrante da gerência {unidade_query},
                     na solicitação de recadastramento. No entanto, essa unidade não consta no banco de dados informado.
                     Sigam com os procedimentos necessários para o recadastramento do servidor. """
                 )
 
 
-        return None, None, "atendimento.sead@goias.gov.br", mensagem
+        return None, None, "luan.asilva@goias.gov.br", mensagem
 
     gerente_nome = resultado.iloc[0]["NOME"]
     gerente_numero = resultado.iloc[0]["CELULAR"]
@@ -49,12 +49,12 @@ def query_banco(unidade_query, nome_query):
 
         mensagem = (
                     f"""
-                    Alerta à GGDP: o servidor {nome_query} informou ser integrante da unidade "{unidade_query}",
+                    Alerta Recadastro: o servidor {nome_query} informou ser integrante da unidade "{unidade_query}",
                     na solicitação de recadastramento. No entanto, essa unidade não possui gerente responável 
                     no banco de dados informado. Sigam com os procedimentos necessários para o recadastramento 
                     do servidor. """
                 )
-        return None, None, "atendimento.sead@goias.gov.br", mensagem
+        return None, None, "luan.asilva@goias.gov.br", mensagem
 
     mensagem = (
                 f"""
