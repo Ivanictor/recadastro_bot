@@ -8,7 +8,6 @@ O projeto foi construído com a utilização das seguintes tecnologias:
 
 `Python`: Linguagem principal <br>
 `FastAPI`: Framework utilizado para a criação da API <br>
-`Webhook`: Mecanismo utilizado para o envio das requisições HTTP à API <br>
 `Uvicorn`: Execução da aplicação web em desenvolvimento <br>
 `SMTP`: Protocolo para envio do email de aviso <br>
 `Baileys.js`: Biblioteca Node.js para conexão com o WhatsApp Web  por meio do protocolo WebSocket. <br>
