@@ -11,6 +11,7 @@ O projeto foi construído com a utilização das seguintes tecnologias:
 `Uvicorn`: Execução da aplicação web em desenvolvimento <br>
 `SMTP`: Protocolo para envio do email de aviso <br>
 `Baileys.js`: Biblioteca Node.js para conexão com o WhatsApp Web  por meio do protocolo WebSocket. <br>
+`RapidFuzz`: Biblioteca Python para realizar correspondência entre o nome digitado e o nome real da unidade usando Fuzzy Matching <br>
 
 ## Integrações
 
@@ -23,4 +24,6 @@ O Dialogflow divide as seções internas do bot em "Intents". Se a mensagem de e
 
 Em desenvolvimento, a webhook se conecta à URL fornecida pelo ngrok para se conectar ao endpoint da API (local). 
 
-Para a correta validação dos dados, o programa registra nome e CPF dos usuários e os guarda em uma sessão, identificada pela "session" do Dialogflow. Se o usuário confirmar o envio dos dados na intent seguinte, o programa verifica se as fotos e a confirmação foram enviadas e, em caso afirmativo, as utiliza para filtrar o gerente responsável e enviar um email e uma mensagem no WhatsApp de aviso. O sistema não foi projetado para analisar o conteúdo das fotos e sim se elas foram enviadas, portanto, a validação dos documentos deve ser feita de forma manual pelos funcionários do órgão.
+Para a correta validação dos dados, o programa registra nome e CPF dos usuários e os guarda em uma sessão, identificada pela "session" do Dialogflow. Se o usuário confirmar o envio dos dados na intent seguinte, o programa verifica se as fotos e a confirmação foram enviadas e, em caso afirmativo, utiliza a unidade informada para filtrar o gerente responsável e enviar um email e uma mensagem de aviso no WhatsApp. A filtragem dos gerentes é realizada com a técnica fuzzy matching para realizar a correspondência entre as unidades do banco de dados e a unidade informada. Desse modo, o programa tolera pequenos erros de digitação. 
+
+Cabe ressaltar que o sistema não foi projetado para analisar o conteúdo das fotos e sim se elas foram enviadas, portanto, a validação dos documentos deve ser feita de forma manual pelos funcionários do órgão.
