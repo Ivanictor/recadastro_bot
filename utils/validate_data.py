@@ -1,11 +1,14 @@
-def format_cpf(cpf: str | None):
+import pandas as pd
+import unicodedata
+
+def formatar_cpf(cpf: str | None):
     if cpf is None:
         return None
     
     cpf_formatado = cpf.replace(".", "").replace("-", "").strip()
     return cpf_formatado
 
-def validate_cpf(cpf: str) -> bool:
+def validar_cpf(cpf: str) -> bool:
     # Remove caracteres não numéricos
     cpf = "".join(filter(str.isdigit, cpf))
 
@@ -35,12 +38,44 @@ def validate_cpf(cpf: str) -> bool:
 
     return True
 
-def validate_photo(foto13, fotorosto13, fotodoc16, fotorosto16):
+def validar_foto(foto13, fotorosto13, fotodoc16, fotorosto16):
     if foto13 and fotorosto13:
         return True
     if fotodoc16 and fotorosto16:
         return True
     return False
+
+def normalizar(texto):
+    texto = texto.strip().lower()
+
+    texto = unicodedata.normalize("NFD", texto)
+
+    texto = "".join(
+        c for c in texto
+        if unicodedata.category(c) != "Mn"
+    )
+
+    return texto
+
+def validar_unidade(unidade):
+    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xslx", skiprows=3, header=0)
+
+    df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
+    df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
+
+    unidade = normalizar(unidade)
+
+    resultado = df[
+        (df["UNIDADE"] == unidade) |
+        (df["SIGLA"] == unidade)
+    ]
+
+    if resultado.empty:
+        print("Unidade não encontrada")
+        return False
+
+    else:
+        return True
 
 
 

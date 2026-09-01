@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import time
 from models.webhook import Webhook
-from utils.validate_data import format_cpf, validate_cpf, validate_photo
+from utils.validate_data import formatar_cpf, validar_cpf, validar_foto, validar_unidade
 from services.data_loader import query_banco
 from services.request_whatsapp import enviar_whatsapp
 from services.email_service import send_email_to_manager
@@ -22,6 +22,9 @@ def webhook(dados: Webhook):
     cpf = (dados.queryResult.parameters.cpf5 
            or dados.queryResult.parameters.cpf7)
 
+    unidade = (dados.queryResult.parameters.unidadelot
+               or dados.queryResult.parameters.unidadelot2)
+
     foto13 = dados.queryResult.parameters.foto5
 
     fotorosto13 = dados.queryResult.parameters.fotorosto5
@@ -35,10 +38,16 @@ def webhook(dados: Webhook):
            or dados.queryResult.parameters.sim)
 
     if cpf is not None:
-        cpf = format_cpf(cpf)
-        if not validate_cpf(cpf):
+        cpf = formatar_cpf(cpf)
+        if not validar_cpf(cpf):
             return {
                 "fulfillmentText": "Verificamos que o CPF que você enviou é inválido. Digite '13' ou '16' para reiniciar a conversa"
+            }
+
+    if unidade is not None:
+        if not validar_unidade(unidade):
+            return {
+                "fulfillmentText": "Verificamos que a unidade que você informou foi digitada incorretamente ou não está presente em nosso banco de dados. Digite '13' ou '16' para reiniciar a conversa"
             }
 
     print(f"Nome: {nome}, CPF: {cpf}")
@@ -47,6 +56,7 @@ def webhook(dados: Webhook):
         sessoes[session] = {
             "nome": nome,
             "cpf": cpf,
+            "unidade": unidade,
             "expira_em": time.monotonic() + TEMPO_SESSAO,
             "foto13": foto13,
             "fotorosto13": fotorosto13,
@@ -67,7 +77,7 @@ def webhook(dados: Webhook):
                 "fulfillmentText": "Sua sessão expirou. Digite 13 (Recadastramento normal) ou 16 (Recadastramento fora do aniversário) para iniciar novamente"
             }
 
-    if sim == '' and validate_photo(
+    if sim == '' and validar_foto(
         sessao.get("foto13"), 
         sessao.get("fotorosto13"), 
         sessao.get("fotodoc16"), 
@@ -76,29 +86,24 @@ def webhook(dados: Webhook):
 
         nome_query = sessao.get("nome")
         cpf_query = sessao.get("cpf")
+        unidade_query = sessao.get("unidade")
 
         print(f"\nQuery: {nome_query}, {cpf_query}")
 
-        gerente_nome, gerente_numero, gerente_email = query_banco(nome_query, cpf_query)
+        gerente_nome, gerente_numero, gerente_email, mensagem = query_banco(unidade_query, nome_query)
 
-        mensagem = (
-            f"""
-            Prezado {gerente_nome}, venho alertá-lo de que o servidor {nome_query}, integrante da sua gerência,
-            solicitou o recadastramento. Conforme os novos procedimentos adotados pela GGDP, é necessário que o 
-            gerente da área assine o processo de recadastramento dos seus funcionários, razão pela qual solicitamos
-            a sua assinatura no processo em anexo. """
-        )
+        
         sucesso = enviar_whatsapp(gerente_numero, mensagem)
         sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         if sucesso or sucesso_email:
             return {
-                "fulfillmentText": "Dados enviados ao gerente responsável"
+                "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}"
             }
         else:
             print("Falha ao enviar ao gerente")
             return {
-                "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para aprovação"
+                "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação"
             }
 
         
