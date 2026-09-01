@@ -1,5 +1,6 @@
 import pandas as pd
 import unicodedata
+from utils.text_similarity import compare_names
 
 
 def normalizar(texto):
@@ -25,12 +26,15 @@ def query_banco(unidade_query, nome_query):
 
     unidade_query = normalizar(unidade_query)
 
-    resultado = df[
-        (df["UNIDADE"] == unidade_query) |
-        (df["SIGLA"] == unidade_query)
-    ]
+    df["similaridade"] = df["UNIDADE"].apply(
+        lambda x: compare_names(unidade_query, x)
+        )
+    
+    indice = df["similaridade"]
 
-    if resultado.empty:
+    resultado = df.loc[indice].idxmax()
+
+    if resultado["similaridade"] < 0.85:
         print("Unidade não encontrada")
 
         mensagem = (

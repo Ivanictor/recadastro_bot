@@ -1,5 +1,6 @@
 import pandas as pd
 import unicodedata
+from text_similarity import compare_names
 
 def formatar_cpf(cpf: str | None):
     if cpf is None:
@@ -63,17 +64,19 @@ def normalizar(texto):
 def validar_unidade(unidade):
     df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xlsx", skiprows=3, header=0)
 
-    df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
 
     unidade = normalizar(unidade)
 
-    resultado = df[
-        (df["UNIDADE"] == unidade) |
-        (df["SIGLA"] == unidade)
-    ]
+    df["similaridade"] = df["UNIDADE"].apply(
+    lambda x: compare_names(unidade, x)
+    )
 
-    if resultado.empty:
+    indice = df["similaridade"]
+
+    resultado = df.loc[indice].idxmax()
+
+    if resultado["similaridade"] < 0.85:
         print("Unidade não encontrada")
         return False
 
