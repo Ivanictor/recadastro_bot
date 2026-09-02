@@ -1,14 +1,12 @@
-from dotenv import load_dotenv
 import smtplib
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
-import os
+from config import settings
 
-load_dotenv()
 
 def send_email_to_manager(nome_funcionario, destiny_email, mensagem):
-    email_remetente = os.getenv("Email")
-    senha = os.getenv("Senha_App")
+    email_remetente = settings.email
+    senha = settings.senha_app
 
     msg = MIMEMultipart()
     msg["From"] = email_remetente
