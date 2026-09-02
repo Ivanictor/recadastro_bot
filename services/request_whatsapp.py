@@ -61,7 +61,22 @@ def iniciar_whatsapp():
     else:
         print("Erro: ", resposta.json())
 
+def tratar_numero_wpp(numero: str):
+    numero = numero.strip()
+    numero = numero.replace("-", "")
+
+    if len(numero) == 11:
+        numero = "55" + numero
+
+    else:
+        numero = "5562" + numero
+
+    return numero
+
 def enviar_whatsapp(numero, mensagem):
+
+    numero = tratar_numero_wpp(numero)
+    
     try:
 
         headers = {

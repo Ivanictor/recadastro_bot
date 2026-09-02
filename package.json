@@ -1,0 +1,19 @@
+{
+  "name": "recadastrobot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "O projeto foi criado para estabelecer conexão com um bot da SEAD que é utilizado, entre outras funções, para o recadastro dos usuários do órgão. Com a conexão, o programa coleta as informações dos usuários que procedem com o recadastro e as utiliza para localizar o gerente da área e notificá-lo sobre o processo para que o assine.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@whiskeysockets/baileys": "^7.0.0-rc14",
+    "dotenv": "^17.4.2",
+    "express": "^5.2.1",
+    "pino": "^10.3.1"
+  }
+}

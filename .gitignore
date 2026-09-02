@@ -3,3 +3,7 @@ __pycache__/
 .env
 Cadastro de Unidades da SEAD - atualizado (1).xlsx
 Cadastro de Unidades da SEAD - atualizado.xlsx
+node_modules/
+auth_info/
+.venv/
+test_data.ipynb

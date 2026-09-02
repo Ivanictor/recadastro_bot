@@ -23,6 +23,7 @@ def query_banco(unidade_query, nome_query):
 
     df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
+    df["CELULAR"] = df["CELULAR"].astype(str)
 
     unidade_query = normalizar(unidade_query)
 
