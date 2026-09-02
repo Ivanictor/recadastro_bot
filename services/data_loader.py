@@ -19,7 +19,7 @@ def normalizar(texto):
     return texto
 
 def query_banco(unidade_query, nome_query):
-    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado (1).xlsx", skiprows=3, header=0)
+    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado.xlsx", skiprows=3, header=0)
 
     df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
@@ -61,7 +61,7 @@ def query_banco(unidade_query, nome_query):
                     no banco de dados informado. Sigam com os procedimentos necessários para o recadastramento 
                     do servidor. """
                 )
-        return None, None, "luan.asilva@goias.gov.br", mensagem
+        return "Nenhum", None, "luan.asilva@goias.gov.br", mensagem
 
     mensagem = (
                 f"""

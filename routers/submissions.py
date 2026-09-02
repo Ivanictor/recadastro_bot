@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 import time
 from models.webhook import Webhook
-from utils.validate_data import formatar_cpf, validar_cpf, validar_foto, validar_unidade
+from utils.validate_data import formatar_cpf, validar_cpf, validar_foto
 from services.data_loader import query_banco
 from services.request_whatsapp import enviar_whatsapp
 from services.email_service import send_email_to_manager
@@ -48,12 +48,6 @@ def webhook(dados: Webhook):
         if not validar_cpf(cpf):
             return {
                 "fulfillmentText": "Verificamos que o CPF que você enviou é inválido. Digite '13' ou '16' para reiniciar a conversa"
-            }
-
-    if unidade is not None:
-        if not validar_unidade(unidade):
-            return {
-                "fulfillmentText": "Verificamos que a unidade que você informou foi digitada incorretamente ou não está presente em nosso banco de dados. Digite '13' ou '16' para reiniciar a conversa"
             }
 
     print(f"Nome: {nome}, CPF: {cpf}")
@@ -109,12 +103,34 @@ def webhook(dados: Webhook):
             sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         if sucesso or sucesso_email:
-            print("\nSucesso! Dados enviados ao gerente responsável\n")
-            return {
-                "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}"
-            }
+
+            if gerente_nome and gerente_nome != "Nenhum":
+
+                print("\nSucesso! Dados enviados ao gerente responsável\n")
+
+                return {
+                    "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}"
+                }
+            
+            elif gerente_nome == "Nenhum":
+
+                print("\n Dados enviados ao Luan para processamento manual")
+
+                return {
+                    "fulfillmentText": f"No banco de dados, consta que a sua unidade não possui gerente responsável no momento, logo seus dados serão processados manualmente"
+                }
+
+            elif not gerente_nome:
+                print("\n Dados enviados ao Luan para processamento manual")
+
+                return {
+                    "fulfillmentText": f"A unidade informada foi digitada incorretamente ou não está presente em nosso banco de dados. Seus dados serão processados manualmente"
+                }
+                
         else:
+
             print("Falha ao enviar ao gerente")
+
             return {
                 "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação"
             }
