@@ -1,6 +1,6 @@
 import pandas as pd
 import unicodedata
-from text_similarity import compare_names
+from utils.text_similarity import compare_names
 
 def formatar_cpf(cpf: str | None):
     if cpf is None:
@@ -72,9 +72,9 @@ def validar_unidade(unidade):
     lambda x: compare_names(unidade, x)
     )
 
-    indice = df["similaridade"]
+    indice = df["similaridade"].idxmax()
 
-    resultado = df.loc[indice].idxmax()
+    resultado = df.loc[indice]
 
     if resultado["similaridade"] < 0.85:
         print("Unidade não encontrada")

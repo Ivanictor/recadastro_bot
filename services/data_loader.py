@@ -30,9 +30,9 @@ def query_banco(unidade_query, nome_query):
         lambda x: compare_names(unidade_query, x)
         )
     
-    indice = df["similaridade"]
+    indice = df["similaridade"].idxmax()
 
-    resultado = df.loc[indice].idxmax()
+    resultado = df.loc[indice]
 
     if resultado["similaridade"] < 0.85:
         print("Unidade não encontrada")
@@ -47,9 +47,9 @@ def query_banco(unidade_query, nome_query):
 
         return None, None, "luan.asilva@goias.gov.br", mensagem
 
-    gerente_nome = resultado.iloc[0]["NOME"]
-    gerente_numero = resultado.iloc[0]["CELULAR"]
-    gerente_email = resultado.iloc[0]["EMAIL"]
+    gerente_nome = resultado["NOME"]
+    gerente_numero = resultado["CELULAR"]
+    gerente_email = resultado["EMAIL"]
 
     if pd.isna(gerente_email) or not str(gerente_email).strip():
         print("Unidade sem gerente")
