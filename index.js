@@ -19,7 +19,7 @@ app.use(express.json());
 const API_KEY = process.env.API_KEY;
 
 if (!API_KEY) {
-    console.error('ERRO FATAL: Variável de ambiente API_KEY não definida no .env');
+    console.error('\nERRO FATAL: Variável de ambiente API_KEY não definida no .env');
     process.exit(1);
 }
 
@@ -65,7 +65,7 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
         const waVersionInfo = await fetchLatestWaWebVersion();
         version = waVersionInfo.version;
     } catch (err) {
-        console.warn('⚠️ Não foi possível buscar versão mais recente do WA Web, usando fallback padrão.');
+        console.warn('\n⚠️ Não foi possível buscar versão mais recente do WA Web, usando fallback padrão.');
     }
 
     const { state, saveCreds } = await useMultiFileAuthState(AUTH_DIR);
@@ -104,7 +104,7 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
                 }, 120000);
 
             } catch (err) {
-                console.error('❌ Erro ao solicitar código de pareamento:', err);
+                console.error('\n❌ Erro ao solicitar código de pareamento:', err);
                 pairingRequested = false;
             }
         }
@@ -114,7 +114,7 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
             isConnecting = false;
             pairingRequested = false;
             lastPairingCode = null;
-            console.log('✅ WhatsApp conectado com sucesso!');
+            console.log('\n✅ WhatsApp conectado com sucesso!');
         }
 
         if (connection === 'close') {
@@ -127,11 +127,11 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
                 try {
                     await connectToWhatsApp(phoneNumberForPairing);
                 } catch (err) {
-                    console.error('❌ Erro ao tentar reconectar:', err);
+                    console.error('\n❌ Erro ao tentar reconectar:', err);
                     isConnecting = false;
                 }
             } else {
-                console.log('🔒 Sessão encerrada/desconectada pelo celular. É necessário autenticar novamente.');
+                console.log('\n🔒 Sessão encerrada/desconectada pelo celular. É necessário autenticar novamente.');
                 isConnecting = false;
                 pairingRequested = false;
                 lastPairingCode = null;
@@ -145,7 +145,7 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
  */
 async function start(phoneNumberForPairing = null) {
     if (isConnecting || isConnected) {
-        console.log('ℹ️ start() ignorado: Conexão já ativa ou em andamento.');
+        console.log('\nℹ️ start() ignorado: Conexão já ativa ou em andamento.');
         return { started: false, reason: 'already-connecting-or-connected' };
     }
 
@@ -238,13 +238,13 @@ app.post('/send-message', requireApiKey, async (req, res) => {
 const hasAuthCredentials = fs.existsSync(AUTH_DIR) && fs.readdirSync(AUTH_DIR).length > 0;
 
 if (hasAuthCredentials) {
-    console.log('📦 Credenciais encontradas. Tentando reconexão automática...');
+    console.log('\n📦 Credenciais encontradas. Tentando reconexão automática...');
     start().catch(err => console.error('Erro na reconexão automática:', err));
 } else {
-    console.log('ℹ️ Nenhuma sessão salva encontrada. Aguardando chamada a /request-pairing-code para parear.');
+    console.log('\nℹ️ Nenhuma sessão salva encontrada. Aguardando chamada a /request-pairing-code para parear.');
 }
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`🚀 Servidor Express do WhatsApp rodando na porta ${PORT}`);
+    console.log(`\n🚀 Servidor Express do WhatsApp rodando na porta ${PORT}`);
 });

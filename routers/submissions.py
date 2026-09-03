@@ -14,8 +14,6 @@ TEMPO_SESSAO = 30 * 60
 @router.post("/webhook")
 def webhook(dados: Webhook):
 
-    print(dados)
-
     nome = (dados.queryResult.parameters.nome5 
             or dados.queryResult.parameters.nome7)
     
@@ -88,19 +86,19 @@ def webhook(dados: Webhook):
         cpf_query = sessao.get("cpf")
         unidade_query = sessao.get("unidade")
 
-        print(f"\nQuery: {nome_query}, {cpf_query}")
+        print(f"\nQuery: {nome_query}, {cpf_query}, {unidade_query}")
 
         gerente_nome, gerente_numero, gerente_email, mensagem = query_banco(unidade_query, nome_query)
+
+        sucesso_email = False
+        
+        if gerente_email:
+            sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         sucesso = False
 
         if gerente_numero:
             sucesso = enviar_whatsapp(gerente_numero, mensagem)
-
-        sucesso_email = False
-
-        if gerente_email:
-            sucesso_email = send_email_to_manager(nome_query, gerente_email, mensagem)
 
         if sucesso or sucesso_email:
 

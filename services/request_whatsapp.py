@@ -1,6 +1,7 @@
 import requests
 import time
 from config import settings
+import textwrap
 
 
 API_KEY = settings.api_key.get_secret_value()
@@ -64,6 +65,8 @@ def iniciar_whatsapp():
 def tratar_numero_wpp(numero: str):
     numero = numero.strip()
     numero = numero.replace("-", "")
+    numero = numero.replace("(", "")
+    numero = numero.replace(")", "")
 
     if len(numero) == 11:
         numero = "55" + numero
@@ -76,7 +79,9 @@ def tratar_numero_wpp(numero: str):
 def enviar_whatsapp(numero, mensagem):
 
     numero = tratar_numero_wpp(numero)
-    
+    mensagem = textwrap.dedent(mensagem).strip()
+
+    print(f"Número do gerente: {numero}")
     try:
 
         headers = {
