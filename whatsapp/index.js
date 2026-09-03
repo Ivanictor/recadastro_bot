@@ -8,10 +8,11 @@ import makeWASocket, {
 import express from 'express';
 import P from 'pino';
 import fs from 'fs';
-import 'dotenv/config';
+import dotenv from 'dotenv';
 
+dotenv.config({path: '../.env'});
 const logger = P({ level: 'silent' });
-const AUTH_DIR = './auth_info';
+const AUTH_DIR = '../auth_info';
 
 const app = express();
 app.use(express.json());
