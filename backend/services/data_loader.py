@@ -66,7 +66,9 @@ def query_banco(unidade_query, nome_query):
 
     mensagem = (
                 f"""
-                Prezado {gerente_nome}, venho alertá-lo de que o servidor {nome_query}, integrante da sua gerência, solicitou o recadastramento. Conforme os novos procedimentos adotados pela GGDP, é necessário que o gerente da área assine o processo de recadastramento dos seus funcionários, razão pela qual solicitamos a sua assinatura no processo em anexo. 
+                Prezado {gerente_nome}, venho alertá-lo de que o servidor {nome_query}, integrante da sua gerência, solicitou o recadastramento anual. 
+                
+                Conforme os novos procedimentos adotados pela GGDP, é necessário que o gerente da área autorize enviando para o e-mail ZZZZZZZZZZZZ  a autorização de recadastramento dos seus funcionários. 
                 """
             )
     print(f"\nNome do gerente responsável: {gerente_nome}\n")
