@@ -107,7 +107,7 @@ def webhook(dados: Webhook):
                 print("\nSucesso! Dados enviados ao gerente responsável\n")
 
                 return {
-                    "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}"
+                    "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}.\n\n Para receber o protocolo desta operação, digite 10."
                 }
             
             elif gerente_nome == "Nenhum":
@@ -115,14 +115,14 @@ def webhook(dados: Webhook):
                 print("\n Dados enviados ao Luan para processamento manual")
 
                 return {
-                    "fulfillmentText": f"No banco de dados, consta que a sua unidade não possui gerente responsável no momento, logo seus dados serão processados manualmente"
+                    "fulfillmentText": f"No banco de dados, consta que a sua unidade não possui gerente responsável no momento, logo seus dados serão processados manualmente. \n\n Para receber o protocolo desta operação, digite 10."
                 }
 
             elif not gerente_nome:
                 print("\n Dados enviados ao Luan para processamento manual")
 
                 return {
-                    "fulfillmentText": f"A unidade informada foi digitada incorretamente ou não está presente em nosso banco de dados. Seus dados serão processados manualmente"
+                    "fulfillmentText": f"A unidade informada foi digitada incorretamente ou não está presente em nosso banco de dados. Seus dados serão processados manualmente.\n Para receber o protocolo desta operação, digite 10."
                 }
                 
         else:
@@ -130,7 +130,7 @@ def webhook(dados: Webhook):
             print("Falha ao enviar ao gerente")
 
             return {
-                "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação"
+                "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação. \n\n Para receber o protocolo desta operação, digite 10"
             }
 
     else:
