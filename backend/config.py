@@ -9,6 +9,7 @@ class Settings(BaseSettings):
     port: str
     email: str
     senha_app: str
+    google_credentials: SecretStr
 
     model_config = SettingsConfigDict(
         env_file=".env",

@@ -7,3 +7,4 @@ node_modules/
 auth_info/
 .venv/
 test_data.ipynb
+credentials/

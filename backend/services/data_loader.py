@@ -1,6 +1,9 @@
+import gspread
+from google.oauth2.service_account import Credentials
 import pandas as pd
 import unicodedata
 from utils.text_similarity import compare_names
+from config import settings
 
 
 def normalizar(texto):
@@ -19,7 +22,26 @@ def normalizar(texto):
     return texto
 
 def query_banco(unidade_query, nome_query):
-    df = pd.read_excel("Cadastro de Unidades da SEAD - atualizado.xlsx", skiprows=3, header=0)
+
+    # Escopos de acesso
+    SCOPES = [
+        "https://www.googleapis.com/auth/spreadsheets",
+        "https://www.googleapis.com/auth/drive"
+    ]
+
+    # Caminho do JSON baixado
+    credentials = Credentials.from_service_account_file(
+        settings.google_credentials.get_secret_value(),
+        scopes=SCOPES
+    )
+    
+    #Abrir planilha
+    client = gspread.authorize(credentials)
+    sheet = client.open("Cadastro de Unidades da SEAD - atualizado (2)").worksheet("Unidades Completo")
+    data = sheet.get_all_values()
+    headers = data[3]
+    rows = data[4:]
+    df = pd.DataFrame(rows, columns=headers)
 
     df["SIGLA"] = df["SIGLA"].fillna("").map(normalizar)
     df["UNIDADE"] = df["UNIDADE"].fillna("").map(normalizar)
@@ -39,11 +61,11 @@ def query_banco(unidade_query, nome_query):
         print("Unidade não encontrada")
 
         mensagem = (
-                    f"""
-                    Alerta Recadastro: o servidor {nome_query} informou ser integrante da gerência {unidade_query},
-                    na solicitação de recadastramento. No entanto, essa unidade não consta no banco de dados informado.
-                    Sigam com os procedimentos necessários para o recadastramento do servidor. """
-                )
+            f"""
+            Alerta Recadastro: o(a) servidor(a) {nome_query} informou ser integrante da gerência {unidade_query},
+            na solicitação de recadastramento. No entanto, essa unidade não consta no banco de dados informado.
+            Sigam com os procedimentos necessários para o recadastramento do servidor. """
+            )
 
 
         return None, None, "luan.asilva@goias.gov.br", mensagem
@@ -56,20 +78,20 @@ def query_banco(unidade_query, nome_query):
         print("Unidade sem gerente")
 
         mensagem = (
-                    f"""
-                    Alerta Recadastro: o servidor {nome_query} informou ser integrante da unidade "{unidade_query}",
-                    na solicitação de recadastramento. No entanto, essa unidade não possui gerente responável 
-                    no banco de dados informado. Sigam com os procedimentos necessários para o recadastramento 
-                    do servidor. """
-                )
+            f"""
+            Alerta Recadastro: o(a) servidor(a) {nome_query} informou ser integrante da unidade "{unidade_query}",
+            na solicitação de recadastramento. No entanto, essa unidade não possui gerente responável 
+            no banco de dados informado. Sigam com os procedimentos necessários para o recadastramento 
+            do servidor. """
+            )
         return "Nenhum", None, "luan.asilva@goias.gov.br", mensagem
 
     mensagem = (
-                f"""
-                Prezado {gerente_nome}, venho alertá-lo de que o servidor {nome_query}, integrante da sua gerência, solicitou o recadastramento anual. 
-                
-                Conforme os novos procedimentos adotados pela GGDP, é necessário que o gerente da área autorize enviando para o e-mail atendimento.ggdp.sead@goias.gov.br a autorização de recadastramento dos seus funcionários. 
-                """
+            f"""
+            Prezado(a) {gerente_nome}, venho alertar que o(a) servidor(a) {nome_query}, integrante da sua gerência, solicitou o recadastramento anual. 
+            
+            Conforme os novos procedimentos adotados pela GGDP, é necessário que o gerente da área autorize enviando para o e-mail atendimento.ggdp.sead@goias.gov.br a autorização de recadastramento dos seus funcionários. 
+            """
             )
     print(f"\nNome do gerente responsável: {gerente_nome}\n")
     
