@@ -31,6 +31,14 @@ let pairingRequested = false;
 let lastPairingCode = null;
 let pairingCodeTimer = null;
 
+// NOVO: rastreamento de mensagens enviadas, para cruzar com messages.update
+const pendingMessages = new Map(); // id -> { jid, mensagem, sentAt }
+
+function ackStatusToLabel(status) {
+    const map = { 0: 'ERROR', 1: 'PENDING', 2: 'SERVER_ACK', 3: 'DELIVERY_ACK', 4: 'READ', 5: 'PLAYED' };
+    return map[status] ?? `DESCONHECIDO(${status})`;
+}
+
 // Middleware de autenticação por API key
 function requireApiKey(req, res, next) {
     const authHeader = req.headers['authorization'] || '';
@@ -58,6 +66,7 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
     if (sock?.ev) {
         sock.ev.removeAllListeners('creds.update');
         sock.ev.removeAllListeners('connection.update');
+        sock.ev.removeAllListeners('messages.update'); // NOVO
     }
 
     // Busca versão mais recente de forma segura
@@ -79,6 +88,22 @@ async function connectToWhatsApp(phoneNumberForPairing = null) {
     });
 
     sock.ev.on('creds.update', saveCreds);
+
+    // NOVO: acompanha o status de entrega de mensagens rastreadas
+    sock.ev.on('messages.update', (updates) => {
+        for (const { key, update } of updates) {
+            if (!pendingMessages.has(key.id)) continue;
+
+            const info = pendingMessages.get(key.id);
+            console.log(`\n📬 Atualização de status | id=${key.id} | jid=${key.remoteJid}`);
+            console.log(`   Enviado há ${((Date.now() - info.sentAt) / 1000).toFixed(1)}s`);
+            console.log(`   Update bruto:`, JSON.stringify(update));
+
+            if (update.status !== undefined) {
+                console.log(`   Status: ${ackStatusToLabel(update.status)}`);
+            }
+        }
+    });
 
     sock.ev.on('connection.update', async (update) => {
         const { connection, lastDisconnect } = update;
@@ -223,15 +248,42 @@ app.post('/send-message', requireApiKey, async (req, res) => {
             return res.status(503).json({ error: 'WhatsApp ainda não está conectado.' });
         }
 
-        const jid = `${numero}@s.whatsapp.net`;
-        await sock.sendMessage(jid, { text: mensagem });
+        const jidConstruido = `${numero}@s.whatsapp.net`;
 
-        console.log(`\n✉️ Mensagem enviada para ${numero}\n`);
-        return res.status(200).json({ success: true, numero, mensagem });
+        // NOVO: verifica se o número existe no WhatsApp e pega o JID canônico
+        const [resultado] = await sock.onWhatsApp(jidConstruido);
+        console.log(`\n🔍 onWhatsApp(${numero}) →`, JSON.stringify(resultado));
+
+        if (!resultado?.exists) {
+            console.log(`⚠️ Número ${numero} não reconhecido como existente no WhatsApp.`);
+            return res.status(404).json({ error: 'Número não parece estar registrado no WhatsApp.' });
+        }
+
+        const jidFinal = resultado.jid || jidConstruido;
+        if (jidFinal !== jidConstruido) {
+            console.log(`ℹ️ JID canônico diferente do construído: ${jidConstruido} → ${jidFinal}`);
+        }
+
+        const sentMsg = await sock.sendMessage(jidFinal, { text: mensagem });
+        console.log(`\n✉️ sendMessage retornou | id=${sentMsg?.key?.id} | jid=${sentMsg?.key?.remoteJid}\n`);
+
+        if (sentMsg?.key?.id) {
+            pendingMessages.set(sentMsg.key.id, { jid: jidFinal, mensagem, sentAt: Date.now() });
+        }
+
+        return res.status(200).json({
+            success: true,
+            numero,
+            mensagem,
+            messageId: sentMsg?.key?.id ?? null
+        });
 
     } catch (error) {
         console.error('\nErro ao enviar mensagem:', error);
-        return res.status(502).json({ error: 'Falha ao enviar mensagem via WhatsApp.' });
+        return res.status(502).json({
+            error: 'Falha ao enviar mensagem via WhatsApp.',
+            detail: error?.message
+        });
     }
 });
 
