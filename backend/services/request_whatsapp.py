@@ -6,7 +6,7 @@ import textwrap
 
 API_KEY = settings.api_key.get_secret_value()
 PHONE_NUMBER = settings.phone_number
-WHATSAPP_WEB_URL = settings.whatsapp_service_url
+WHATSAPP_WEB_URL = settings.whatsapp_web_url
 
 def solicitar_codigo_pareamento():
 
