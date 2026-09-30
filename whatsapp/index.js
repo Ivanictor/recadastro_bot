@@ -298,6 +298,6 @@ if (hasAuthCredentials) {
 }
 
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
+app.listen(PORT, '127.0.0.1', () => {
     console.log(`\n🚀 Servidor Express do WhatsApp rodando na porta ${PORT}`);
 });
