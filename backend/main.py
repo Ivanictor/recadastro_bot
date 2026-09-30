@@ -23,4 +23,4 @@ app = FastAPI(lifespan=lifespan)
 app.include_router(router)
 
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="127.0.0.1", port=5001, reload=False) #Manter reload=False e host=127.0.0.1 para deploy
+    uvicorn.run("main:app", host="127.0.0.1", port=5004, reload=False) #Manter reload=False e host=127.0.0.1 para deploy
