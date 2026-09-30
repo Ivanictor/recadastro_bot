@@ -5,8 +5,8 @@ from config import settings
 
 
 def send_email_to_manager(nome_funcionario, destiny_email, mensagem):
-    email_remetente = settings.email
-    senha = settings.senha_app
+    email_remetente = settings.email_gmail
+    senha = settings.senha_app_gmail
 
     msg = MIMEMultipart()
     msg["From"] = email_remetente
@@ -16,7 +16,7 @@ def send_email_to_manager(nome_funcionario, destiny_email, mensagem):
     msg.attach(MIMEText(mensagem, "plain"))
 
     try:
-        with smtplib.SMTP("mail.goias.gov.br", 587) as server:
+        with smtplib.SMTP("smtp.gmail.com", 587) as server:
             server.ehlo()
             server.starttls()
             server.ehlo()

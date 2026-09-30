@@ -5,11 +5,13 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Settings(BaseSettings):
     api_key: SecretStr
     phone_number: str
-    whatsapp_service_url: str = "http://127.0.0.1:3000"
+    whatsapp_web_url: str = "http://127.0.0.1:3000"
     port: str
     email: str
-    senha_app: str
+    senha_app_gmail: str
+    email_gmail: str
     google_credentials: SecretStr
+    x_webhook_token: SecretStr
 
     model_config = SettingsConfigDict(
         env_file=".env",

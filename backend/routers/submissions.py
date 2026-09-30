@@ -1,12 +1,21 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, Header, HTTPException, status
 import time
+import secrets
 from models.webhook import Webhook
 from utils.validate_data import formatar_cpf, validar_cpf, validar_foto
 from services.data_loader import query_banco
 from services.request_whatsapp import enviar_whatsapp
 from services.email_service import send_email_to_manager
+from config import settings
 
-router = APIRouter()
+WEBHOOK_TOKEN = settings.x_webhook_token
+
+def verificar_token(token: str | None = Header(default=None, alias="X-Webhook-Token")):
+    # compare_digest evita timing attacks
+    if not token or not secrets.compare_digest(token, WEBHOOK_TOKEN):
+        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Não autorizado")
+
+router = APIRouter(dependencies=[Depends(verificar_token)])
 
 sessoes = {}
 TEMPO_SESSAO = 30 * 60
