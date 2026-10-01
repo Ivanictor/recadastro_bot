@@ -8,7 +8,7 @@ from services.request_whatsapp import enviar_whatsapp
 from services.email_service import send_email_to_manager
 from config import settings
 
-WEBHOOK_TOKEN = settings.x_webhook_token
+WEBHOOK_TOKEN = settings.x_webhook_token.get_secret_value()
 
 def verificar_token(token: str | None = Header(default=None, alias="X-Webhook-Token")):
     # compare_digest evita timing attacks
