@@ -1,30 +1,12 @@
-from fastapi import APIRouter, Depends, Header, HTTPException, status, Request
+from fastapi import APIRouter
 import time
-import base64, json
-import secrets
 from models.webhook import Webhook
 from utils.validate_data import formatar_cpf, validar_cpf, validar_foto
 from services.data_loader import query_banco
 from services.request_whatsapp import enviar_whatsapp
 from services.email_service import send_email_to_manager
-from config import settings
 
-WEBHOOK_TOKEN = settings.x_webhook_token.get_secret_value()
-
-def verificar_token(request: Request, token: str | None = Header(default=None, alias="X-Webhook-Token")):
-    auth = request.headers.get("authorization", "")
-    try:
-        payload = auth.split(" ", 1)[1].split(".")[1]
-        payload += "=" * (-len(payload) % 4)
-        dados = json.loads(base64.urlsafe_b64decode(payload))
-        print({k: dados.get(k) for k in ("iss", "aud", "email", "exp")})
-    except Exception as e:
-        print("não consegui decodificar:", e)
-    # compare_digest evita timing attacks
-    if not token or not secrets.compare_digest(token, WEBHOOK_TOKEN):
-        raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Não autorizado")
-
-router = APIRouter(dependencies=[Depends(verificar_token)])
+router = APIRouter()
 
 sessoes = {}
 TEMPO_SESSAO = 30 * 60

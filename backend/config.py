@@ -11,7 +11,6 @@ class Settings(BaseSettings):
     senha_app_gmail: str
     email_gmail: str
     google_credentials: SecretStr
-    x_webhook_token: SecretStr
 
     model_config = SettingsConfigDict(
         env_file=".env",
