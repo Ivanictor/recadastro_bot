@@ -11,6 +11,7 @@ from config import settings
 WEBHOOK_TOKEN = settings.x_webhook_token.get_secret_value()
 
 def verificar_token(token: str | None = Header(default=None, alias="X-Webhook-Token")):
+    print(f"token recebido: {bool(token)}, tamanho: {len(token) if token else 0}")
     # compare_digest evita timing attacks
     if not token or not secrets.compare_digest(token, WEBHOOK_TOKEN):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Não autorizado")
