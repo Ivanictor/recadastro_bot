@@ -104,7 +104,7 @@ def webhook(dados: Webhook):
 
             if gerente_nome and gerente_nome != "Nenhum":
 
-                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento e o gerente/coordenador {gerente_nome} foi corretamente notificado"
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento e o gerente/coordenador {gerente_nome}, da {unidade_query} foi corretamente notificado"
 
                 print("\nSucesso! Dados enviados ao gerente responsável\n")
 
@@ -116,7 +116,7 @@ def webhook(dados: Webhook):
             
             elif gerente_nome == "Nenhum":
 
-                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade está sem gerente/coordenador"
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade ({unidade_query}) está sem gerente/coordenador"
 
                 print("\n Dados enviados ao Luan para processamento manual")
 
@@ -128,7 +128,7 @@ def webhook(dados: Webhook):
 
             elif not gerente_nome:
 
-                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade informada não foi encontrada no banco de dados"
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade informada ({unidade_query}) não foi encontrada no banco de dados"
 
                 print("\n Dados enviados ao Luan para processamento manual")
 
@@ -140,7 +140,7 @@ def webhook(dados: Webhook):
                 
         else:
 
-            mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém houve falha na notificação do gestor responsável"
+            mensagem_rh = f"O funcionário {nome_query}, da {unidade_query}, solicitou recadastramento, porém houve falha na notificação do gestor responsável"
 
             print("Falha ao enviar ao gerente")
 
