@@ -105,3 +105,43 @@ def enviar_whatsapp(numero, mensagem):
     except requests.exceptions.RequestException as e:
         print(f"Erro ao conectar com o servidor de WhatsApp: {e}")
         return False
+
+def tratar_numero_wpp(numero: str):
+    numero = numero.strip()
+    numero = numero.replace("-", "")
+    numero = numero.replace("(", "")
+    numero = numero.replace(")", "")
+
+    if len(numero) == 11:
+        numero = "55" + numero
+
+    else:
+        numero = "5562" + numero
+
+    return numero
+
+def enviar_whatsapp_rh(mensagem):
+
+    numero = "556292813709"
+    mensagem = textwrap.dedent(mensagem).strip()
+
+    try:
+
+        headers = {
+            "Authorization": f"Bearer {API_KEY}"
+            }
+    
+        response = requests.post(f"{WHATSAPP_WEB_URL}/send-message", json={
+            "numero": numero,
+            "mensagem": mensagem
+        },
+        headers=headers)
+
+        if response.status_code == 200:
+            print("Mensagem enviada com sucesso ao Luan")
+
+        else:
+            print("Erro na mensagem ao Luan:", response.status_code)
+
+    except requests.exceptions.RequestException as e:
+        print(f"Erro ao conectar com o servidor de WhatsApp: {e}")

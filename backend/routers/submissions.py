@@ -3,7 +3,7 @@ import time
 from models.webhook import Webhook
 from utils.validate_data import formatar_cpf, validar_cpf, validar_foto
 from services.data_loader import query_banco
-from services.request_whatsapp import enviar_whatsapp
+from services.request_whatsapp import enviar_whatsapp, enviar_whatsapp_rh
 from services.email_service import send_email_to_manager
 
 router = APIRouter()
@@ -104,7 +104,11 @@ def webhook(dados: Webhook):
 
             if gerente_nome and gerente_nome != "Nenhum":
 
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento e o gerente/coordenador {gerente_nome} foi corretamente notificado"
+
                 print("\nSucesso! Dados enviados ao gerente responsável\n")
+
+                enviar_whatsapp_rh(mensagem_rh)
 
                 return {
                     "fulfillmentText": f"Dados enviados ao gerente responsável: {gerente_nome}.\n\n Para receber o protocolo desta operação, digite 10."
@@ -112,14 +116,23 @@ def webhook(dados: Webhook):
             
             elif gerente_nome == "Nenhum":
 
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade está sem gerente/coordenador"
+
                 print("\n Dados enviados ao Luan para processamento manual")
+
+                enviar_whatsapp_rh(mensagem_rh)
 
                 return {
                     "fulfillmentText": f"No banco de dados, consta que a sua unidade não possui gerente responsável no momento, logo seus dados serão processados manualmente. \n\n Para receber o protocolo desta operação, digite 10."
                 }
 
             elif not gerente_nome:
+
+                mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém sua unidade informada não foi encontrada no banco de dados"
+
                 print("\n Dados enviados ao Luan para processamento manual")
+
+                enviar_whatsapp_rh(mensagem_rh)
 
                 return {
                     "fulfillmentText": f"A unidade informada foi digitada incorretamente ou não está presente em nosso banco de dados. Seus dados serão processados manualmente.\n Para receber o protocolo desta operação, digite 10."
@@ -127,7 +140,11 @@ def webhook(dados: Webhook):
                 
         else:
 
+            mensagem_rh = f"O funcionário {nome_query} solicitou recadastramento, porém houve falha na notificação do gestor responsável"
+
             print("Falha ao enviar ao gerente")
+
+            enviar_whatsapp_rh(mensagem_rh)
 
             return {
                 "fulfillmentText": "Solicitação recebida, favor entrar em contato com o gerente para solicitar sua aprovação. \n\n Para receber o protocolo desta operação, digite 10"
