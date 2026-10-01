@@ -11,8 +11,14 @@ from config import settings
 WEBHOOK_TOKEN = settings.x_webhook_token.get_secret_value()
 
 def verificar_token(request: Request, token: str | None = Header(default=None, alias="X-Webhook-Token")):
-    print("authorization scheme:", request.headers.get("authorization", "").split(" ")[0])
-    print(f"token recebido: {bool(token)}, tamanho: {len(token) if token else 0}")
+    auth = request.headers.get("authorization", "")
+    esquema, _, valor = auth.partition(" ")
+    print(
+        "scheme:", esquema,
+        "| tamanho:", len(valor),
+        "| parece JWT:", valor.startswith("eyJ"),
+        "| confere:", secrets.compare_digest(valor.encode(), WEBHOOK_TOKEN.encode()),
+    )
     # compare_digest evita timing attacks
     if not token or not secrets.compare_digest(token, WEBHOOK_TOKEN):
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="Não autorizado")
