@@ -1,6 +1,9 @@
-from fastapi import APIRouter
+from fastapi import APIRouter, Depends, HTTPException
 import time
+import secrets
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from models.webhook import Webhook
+from config import settings
 from utils.validate_data import formatar_cpf, validar_cpf, validar_foto
 from services.data_loader import query_banco
 from services.request_whatsapp import enviar_whatsapp, enviar_whatsapp_rh
@@ -8,11 +11,17 @@ from services.email_service import send_email_to_manager
 
 router = APIRouter()
 
+security = HTTPBasic()
+
 sessoes = {}
 TEMPO_SESSAO = 30 * 60
 
 @router.post("/webhook")
-def webhook(dados: Webhook):
+def webhook(dados: Webhook, creds: HTTPBasicCredentials = Depends(security)):
+
+    if not (secrets.compare_digest(creds.username.encode(), settings.basic_user) and
+            secrets.compare_digest(creds.password.encode(), settings.basic_password.get_secret_value())):
+        raise HTTPException(status_code=401, headers={"WWW-Authenticate": "Basic"})
 
     nome = (dados.queryResult.parameters.nome5 
             or dados.queryResult.parameters.nome7)
