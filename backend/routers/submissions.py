@@ -19,8 +19,8 @@ TEMPO_SESSAO = 30 * 60
 @router.post("/webhook")
 def webhook(dados: Webhook, creds: HTTPBasicCredentials = Depends(security)):
 
-    if not (secrets.compare_digest(creds.username.encode(), settings.basic_user) and
-            secrets.compare_digest(creds.password.encode(), settings.basic_password.get_secret_value())):
+    if not (secrets.compare_digest(creds.username, settings.basic_user) and
+            secrets.compare_digest(creds.password, settings.basic_password.get_secret_value())):
         raise HTTPException(status_code=401, headers={"WWW-Authenticate": "Basic"})
 
     nome = (dados.queryResult.parameters.nome5 
