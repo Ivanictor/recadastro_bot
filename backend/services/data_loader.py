@@ -37,7 +37,7 @@ def query_banco(unidade_query, nome_query):
     
     #Abrir planilha
     client = gspread.authorize(credentials)
-    sheet = client.open("Cadastro de Unidades da SEAD - atualizado (2)").worksheet("Unidades Completo")
+    sheet = client.open("Cadastro de Unidades da SEAD - atualizado (2)").worksheet("Unidades com Vapt")
     data = sheet.get_all_values()
     headers = data[3]
     rows = data[4:]
