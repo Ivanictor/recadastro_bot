@@ -21,23 +21,34 @@ def normalizar(texto):
 
     return texto
 
+sheet = None
+
+def obter_planilha():
+
+    global sheet
+
+    if sheet is None:
+        # Escopos de acesso
+        SCOPES = [
+            "https://www.googleapis.com/auth/spreadsheets",
+            "https://www.googleapis.com/auth/drive"
+        ]
+    
+        # Caminho do JSON baixado
+        credentials = Credentials.from_service_account_file(
+            settings.google_credentials.get_secret_value(),
+            scopes=SCOPES
+        )
+        
+        #Abrir planilha
+        client = gspread.authorize(credentials)
+        sheet = client.open("Cadastro de Unidades da SEAD - atualizado (2)").worksheet("Unidades com Vapt")
+
+    return sheet
+
 def query_banco(unidade_query, nome_query):
 
-    # Escopos de acesso
-    SCOPES = [
-        "https://www.googleapis.com/auth/spreadsheets",
-        "https://www.googleapis.com/auth/drive"
-    ]
-
-    # Caminho do JSON baixado
-    credentials = Credentials.from_service_account_file(
-        settings.google_credentials.get_secret_value(),
-        scopes=SCOPES
-    )
-    
-    #Abrir planilha
-    client = gspread.authorize(credentials)
-    sheet = client.open("Cadastro de Unidades da SEAD - atualizado (2)").worksheet("Unidades com Vapt")
+    sheet = obter_planilha()
     data = sheet.get_all_values()
     headers = data[3]
     rows = data[4:]
