@@ -13,6 +13,7 @@ class Settings(BaseSettings):
     google_credentials: SecretStr
     basic_user: str
     basic_password: SecretStr
+    rh_number: str
 
     model_config = SettingsConfigDict(
         env_file=".env",

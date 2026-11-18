@@ -7,6 +7,7 @@ import textwrap
 API_KEY = settings.api_key.get_secret_value()
 PHONE_NUMBER = settings.phone_number
 WHATSAPP_WEB_URL = settings.whatsapp_web_url
+RH_NUMBER = settings.rh_number
 
 def solicitar_codigo_pareamento():
 
@@ -122,7 +123,7 @@ def tratar_numero_wpp(numero: str):
 
 def enviar_whatsapp_rh(mensagem):
 
-    numero = "556292813709"
+    numero = RH_NUMBER
     mensagem = textwrap.dedent(mensagem).strip()
 
     try:
